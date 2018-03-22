@@ -6,10 +6,10 @@ class Sidebar extends React.Component {
     return (
       notes.map((note, index) => {
         return (
-          <h2
+          <li
             onClick={ () => this.props.handleSetCurrentIndex(index) }>
-            {note.title}
-          </h2>
+            {note.title.length > 15 ? note.title.slice(0, 15) + '...' : note.title }
+          </li>
         )
       })
     )

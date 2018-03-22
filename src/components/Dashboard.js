@@ -16,6 +16,18 @@ class Dashboard extends React.Component {
     }
   }
 
+  componentDidMount() {
+    fetch('http://localhost:3001/notes')
+      .then((response) => {
+        return response.json()
+      })
+      .then(data => {
+        this.setState({
+          notes: data
+        })
+      }) 
+  }
+
   handleTitleChange(event) {
     const currentNoteIndex = this.state.currentNoteIndex
     const newNotes = this.state.notes.slice()
@@ -37,12 +49,18 @@ class Dashboard extends React.Component {
       notes: newNotes
     })
   }
-
+  
+  handleSetCurrentIndex(index) {
+    this.setState({
+      currentNoteIndex: index
+    })
+  }
+  
   addNewNote() {
     const newNotes = this.state.notes.slice()
     newNotes.push({
-      title: '<Enter title here>',
-      body: '<Enter body here>'
+      title: '<Title here>',
+      body: '<Body here>'
     })
     this.setState({
       notes: newNotes,
@@ -50,28 +68,49 @@ class Dashboard extends React.Component {
     })
   }
 
-  handleSetCurrentIndex(index) {
-    this.setState({
-      currentNoteIndex: index
-    })
+  sync() {
+    fetch(
+      'http://localhost:3001/notes/sync',
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 'message': this.state.notes })
+      }
+    ).then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          notes: data
+        })
+      })
   }
 
   render() {
     return (
       <div className='dashboard'>
-        <Sidebar 
-          notes={this.state.notes}
-          handleSetCurrentIndex={(index) => this.handleSetCurrentIndex(index)}
-        />
-        <button 
-          onClick={() => this.addNewNote()}>
-          Add new note
-        </button>
-        <Note 
-          note={this.state.notes[this.state.currentNoteIndex]}
-          handleTitleChange={(e) => this.handleTitleChange(e)}
-          handleBodyChange={(e) => this.handleBodyChange(e)}
-        />
+        <ol>
+          <Sidebar 
+            notes={this.state.notes}
+            handleSetCurrentIndex={(index) => this.handleSetCurrentIndex(index)}
+            />
+        </ol>
+        <div>
+          <button 
+            onClick={() => this.addNewNote()}>
+            Add new note
+          </button>
+          <button 
+            onClick={() => this.sync()}>
+            Sync
+          </button>
+          <Note 
+            note={this.state.notes[this.state.currentNoteIndex]}
+            handleTitleChange={(e) => this.handleTitleChange(e)}
+            handleBodyChange={(e) => this.handleBodyChange(e)}
+          />
+        </div>
       </div>
     )
   }
