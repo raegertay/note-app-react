@@ -12,7 +12,7 @@ class Dashboard extends React.Component {
           body: 'Body'
         }
       ],
-      currentNoteIndex: 0
+      currentNoteIndex: 0,
     }
   }
 
@@ -23,7 +23,8 @@ class Dashboard extends React.Component {
       })
       .then(data => {
         this.setState({
-          notes: data
+          notes: data,
+          currentNoteIndex: 0,
         })
       }) 
   }
@@ -87,6 +88,15 @@ class Dashboard extends React.Component {
       })
   }
 
+  handleDeleteNote(index) {
+    const newNotes = this.state.notes.slice()
+    newNotes.splice(index, 1)
+    this.setState({
+      notes: newNotes,
+      currentNoteIndex: 0
+    })
+  }
+
   render() {
     return (
       <div className='dashboard'>
@@ -94,6 +104,7 @@ class Dashboard extends React.Component {
           <Sidebar 
             notes={this.state.notes}
             handleSetCurrentIndex={(index) => this.handleSetCurrentIndex(index)}
+            handleDeleteNote={(index) => this.handleDeleteNote(index)}
             />
         </ol>
         <div>
@@ -109,6 +120,7 @@ class Dashboard extends React.Component {
             note={this.state.notes[this.state.currentNoteIndex]}
             handleTitleChange={(e) => this.handleTitleChange(e)}
             handleBodyChange={(e) => this.handleBodyChange(e)}
+            currentNoteIndex={this.state.currentNoteIndex}
           />
         </div>
       </div>
